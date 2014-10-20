@@ -7,4 +7,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:1.1.8.RELEASE")
     compile("org.slf4j:slf4j-api:1.7.7")
     compile('ch.qos.logback:logback-classic:1.1.2')
+    compile('org.apache.tomcat.embed:tomcat-embed-jasper:8.0.14')
 }

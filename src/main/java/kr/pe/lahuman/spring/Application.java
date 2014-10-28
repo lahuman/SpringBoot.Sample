@@ -2,16 +2,16 @@ package kr.pe.lahuman.spring;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -32,8 +32,20 @@ import java.util.Locale;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
+//하나의 properties를 사용할 경우
+//@PropertySource("classpath:${APP_ENV:default}.properties")
+//여러 properties를 사용할 경우
+@PropertySources({
+    @PropertySource("classpath:${APP_ENV:DEV}.db.properties"),
+    @PropertySource("classpath:${APP_ENV:DEV}.setting.properties")
+        //물리 위치에서 파일을 찾을 경우
+//    @PropertySource("file:/data/${APP_ENV:DEV}.setting.properties")
+})
 public class Application  extends WebMvcConfigurerAdapter {
     static final Logger log = LoggerFactory.getLogger(Application.class);
+
+    @Autowired
+    private Environment env;
 
     @Override
     public void configureDefaultServletHandling(
@@ -67,6 +79,8 @@ public class Application  extends WebMvcConfigurerAdapter {
 //        for (String beanName : beanNames) {
 //            log.info(beanName);
 //        }
+
+
     }
 
 
@@ -95,7 +109,8 @@ public class Application  extends WebMvcConfigurerAdapter {
 //        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
 
         //최초 기본 로케일을 강제로 설정이 가능 하다.
-        localeResolver.setDefaultLocale(new Locale("en_US"));
+        localeResolver.setDefaultLocale(new Locale(env.getProperty("default.locale")));
+
         return localeResolver;
     }
 

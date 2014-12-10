@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.27/angular.min.js"></script>
+    <title></title>
+    <script type="text/javascript">
+
+angular.module('employeeApp', [])
+    .controller('employeeInfoCtrl', function ($scope) {
+            $scope.employee = [];
+            $scope.status  = ($scope.employee.id == undefined )? "new Employee":"moidfy Employee";
+            $scope.employee.sex  ="M";
+            $scope.addEmployee = function(){
+                //INSERT OR UPDATE
+            }
+        })
+    .controller('employeeListCtrl', function($scope){
+        //QUERY LIST
+    });
+    </script>
+</head>
+<body ng-app="employeeApp">
+
+<hr />
+<div ng-controller="employeeInfoCtrl">
+    {{status}}
+    <form id="employeeForm" >
+        <input type="hidden" id="id" name="id" ng-model="employee.id" />
+        Name : <input type="text"  id="name" name="name" ng-model="employee.name" /><br />
+        Age : <input type="text" id="age" name="age" ng-model="employee.age" /><br />
+        Position : <input type="text" id="position" name="position" ng-model="employee.position" /><br />
+        sex : <label><input type="radio" id="msex" name="sex" value="M" ng-model="employee.sex" /> 남자</label><label><input type="radio" id="fsex" name="sex" value="F" ng-model="employee.sex" /> 여자</label><br />
+        <button ng-click="addEmployee()">OK</button>
+    </form>
+</div>
+<hr />
+<div ng-controller="employeeListCtrl">
+
+</div>
+</body>
+</html>

@@ -1,7 +1,13 @@
 package kr.pe.lahuman.spring;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.h2.Driver;
+import org.h2.tools.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -12,6 +18,9 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -23,6 +32,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -41,7 +53,8 @@ import java.util.Locale;
         //물리 위치에서 파일을 찾을 경우
 //    @PropertySource("file:/data/${APP_ENV:DEV}.setting.properties")
 })
-public class Application  extends WebMvcConfigurerAdapter {
+@Import({DataAccessConfig.class})
+public class Application  extends WebMvcConfigurerAdapter  implements InitializingBean, DisposableBean {
     static final Logger log = LoggerFactory.getLogger(Application.class);
 
     @Autowired
@@ -81,6 +94,7 @@ public class Application  extends WebMvcConfigurerAdapter {
 //        }
 
 
+
     }
 
 
@@ -117,5 +131,59 @@ public class Application  extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         //Interceptor를 추가 한다.
         registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    Server server = null;
+    @Override
+    public void destroy() throws Exception {
+        log.debug("STOP H2 DATABASE");
+        if(server != null) {
+            server.stop();
+        }
+
+    }
+
+
+
+    static {
+        try {
+            DriverManager.registerDriver(new Driver());
+        } catch (Exception e) {}
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        log.debug("START H2 DATABASE");
+        server = Server.createTcpServer( "-tcpPort", "9123").start();
+
+
+        // now use the database in your application in embedded mode
+        Class.forName("org.h2.Driver");
+        Connection conn =
+                DriverManager.getConnection("jdbc:h2:~/lahuman", "sa", "");
+
+        Statement stat = conn.createStatement();
+        stat.execute("CREATE TABLE IF NOT EXISTS WORKER(ID INT auto_increment PRIMARY KEY , AGE INT, NAME VARCHAR(20), POSITION VARCHAR(10), SALARY INT, SEX BOOLEAN, REGISTER_DATE DATE,  MODIFY_DATE DATE)");
+
+        ResultSet rs = stat.executeQuery("SELECT ID FROM WORKER");
+        while(rs.next()){
+            log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            log.debug(rs.getString(1));
+            log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+        }
+        rs.close();
+        conn.close();
+
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        converter.setObjectMapper(objectMapper);
+        converters.add(converter);
+        super.configureMessageConverters(converters);
     }
 }

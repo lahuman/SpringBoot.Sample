@@ -1,0 +1,25 @@
+<table class="table movietable">
+    <tr>
+        <td><h3>Details for {{employee.name}}</h3></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>{{employee.name}}</td>
+    </tr>
+    <tr>
+        <td>Age</td>
+        <td>{{employee.age}}</td>
+    </tr>
+    <tr>
+        <td>Position</td>
+        <td>{{employee.position}}</td>
+    </tr>
+    <tr>
+        <td>sex</td>
+        <td>{{employee.sex}}</td>
+    </tr>
+</table>
+<div>
+    <a class="btn btn-primary" ui-sref="editEmployee({id:employee.id})">Edit</a>
+</div>

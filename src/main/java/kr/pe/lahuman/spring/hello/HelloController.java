@@ -1,18 +1,20 @@
 package kr.pe.lahuman.spring.hello;
 
+import kr.pe.lahuman.spring.employee.EmployeeBean;
+import kr.pe.lahuman.spring.employee.EmployeeManageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by lahuman on 2014-10-14.
@@ -29,6 +31,8 @@ public class HelloController {
 
     @Autowired
     private LocaleResolver localeResolver;
+
+
 
     @RequestMapping("/")
     public @ResponseBody String index(HttpServletRequest request) {
@@ -62,4 +66,6 @@ public class HelloController {
         log.debug("ENV DB DRIVER: " + env.getProperty("db.driver"));
         return "test";
     }
+
+
 }

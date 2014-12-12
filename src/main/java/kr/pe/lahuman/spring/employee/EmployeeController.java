@@ -24,16 +24,6 @@ public class EmployeeController {
     static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
-    private Environment env;
-
-    @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    private LocaleResolver localeResolver;
-
-
-    @Autowired
     private EmployeeManageService employeeManageService;
 
 

@@ -145,36 +145,20 @@ public class Application  extends WebMvcConfigurerAdapter  implements Initializi
 
 
 
-    static {
-        try {
-            DriverManager.registerDriver(new Driver());
-        } catch (Exception e) {}
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         log.debug("START H2 DATABASE");
         server = Server.createTcpServer( "-tcpPort", "9123").start();
-
-
         // now use the database in your application in embedded mode
         Class.forName("org.h2.Driver");
         Connection conn =
                 DriverManager.getConnection("jdbc:h2:~/lahuman", "sa", "");
-
         Statement stat = conn.createStatement();
-        stat.execute("CREATE TABLE IF NOT EXISTS WORKER(ID INT auto_increment PRIMARY KEY , AGE INT, NAME VARCHAR(20), POSITION VARCHAR(10), SALARY INT, SEX BOOLEAN, REGISTER_DATE DATE,  MODIFY_DATE DATE)");
-
-        ResultSet rs = stat.executeQuery("SELECT ID FROM WORKER");
-        while(rs.next()){
-            log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            log.debug(rs.getString(1));
-            log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        }
-        rs.close();
+        stat.execute("CREATE TABLE IF NOT EXISTS WORKER(" +
+                "ID INT auto_increment PRIMARY KEY , AGE INT, NAME VARCHAR(20), POSITION VARCHAR(10), SALARY INT" +
+                ", SEX BOOLEAN, REGISTER_DATE DATE,  MODIFY_DATE DATE)");
         conn.close();
-
     }
 
     @Override
